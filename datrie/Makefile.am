@@ -31,7 +31,9 @@ libdatrie_la_SOURCES =	\
 	trie.c		\
 	alpha-map.h	\
 	alpha-map-private.h	\
-	alpha-map.c
+	alpha-map.c \
+	tcutils.h \
+	tcutils.c
 
 if LD_HAS_VERSION_SCRIPT
 EXPORTS_FLAGS = -Wl,-version-script -Wl,$(srcdir)/libdatrie.map

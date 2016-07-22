@@ -34,6 +34,7 @@
 #include "tail.h"
 #include "trie-private.h"
 #include "fileutils.h"
+#include "tcutils.h"
 
 /*----------------------------------*
  *    INTERNAL TYPES DECLARATIONS   *
@@ -156,11 +157,11 @@ tail_fread (FILE *file)
             goto exit_in_loop;
         }
 
-        t->tails[i].suffix = (TrieChar *) malloc (length + 1);
+        t->tails[i].suffix = (TrieChar *) malloc ((length + 1) * sizeof(TrieChar));
         if (UNLIKELY (!t->tails[i].suffix))
             goto exit_in_loop;
         if (length > 0) {
-            if (!file_read_chars (file, (char *)t->tails[i].suffix, length)) {
+            if (!file_read_chars (file, (char *)t->tails[i].suffix, length * sizeof(TrieChar))) {
                 free (t->tails[i].suffix);
                 goto exit_in_loop;
             }
@@ -236,12 +237,12 @@ tail_fwrite (const Tail *t, FILE *file)
             return -1;
         }
 
-        length = t->tails[i].suffix ? strlen ((const char *)t->tails[i].suffix)
+        length = t->tails[i].suffix ? tclen ((const char *)t->tails[i].suffix)
                                     : 0;
         if (!file_write_int16 (file, length))
             return -1;
         if (length > 0 &&
-            !file_write_chars (file, (char *)t->tails[i].suffix, length))
+            !file_write_chars (file, (char *)t->tails[i].suffix, length*sizeof(TrieChar)))
         {
             return -1;
         }
@@ -289,7 +290,7 @@ tail_set_suffix (Tail *t, TrieIndex index, const TrieChar *suffix)
          */
         TrieChar *tmp = NULL;
         if (suffix)
-            tmp = (TrieChar *) strdup ((const char *)suffix);
+            tmp = (TrieChar *) tcdup ((const char *)suffix);
         if (t->tails[index].suffix)
             free (t->tails[index].suffix);
         t->tails[index].suffix = tmp;

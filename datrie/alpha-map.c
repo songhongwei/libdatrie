@@ -416,7 +416,7 @@ alpha_map_char_to_trie_str (const AlphaMap *alpha_map, const AlphaChar *str)
 {
     TrieChar   *trie_str, *p;
 
-    trie_str = (TrieChar *) malloc (alpha_char_strlen (str) + 1);
+    trie_str = (TrieChar *) malloc (sizeof(TrieChar) * (alpha_char_strlen (str) + 1));
     if (UNLIKELY (!trie_str))
         return NULL;
 

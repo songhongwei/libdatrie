@@ -35,6 +35,7 @@
 #include "darray.h"
 #include "tail.h"
 #include "trie-string.h"
+#include "tcutils.h"
 
 /**
  * @brief Trie structure
@@ -1016,7 +1017,7 @@ trie_iterator_get_key (const TrieIterator *iter)
         tail_str += s->suffix_idx;
 
         alpha_key = (AlphaChar *) malloc (sizeof (AlphaChar)
-                                          * (strlen ((const char *)tail_str)
+                                          * (tclen ((const char *)tail_str)
                                              + 1));
         alpha_p = alpha_key;
     } else {
@@ -1033,7 +1034,7 @@ trie_iterator_get_key (const TrieIterator *iter)
         key_p = trie_string_get_val (iter->key);
         alpha_key = (AlphaChar *) malloc (
                         sizeof (AlphaChar)
-                        * (key_len + strlen ((const char *)tail_str) + 1)
+                        * (key_len + tclen ((const char *)tail_str) + 1)
                     );
         alpha_p = alpha_key;
         for (i = key_len; i > 0; i--) {
@@ -1083,7 +1084,42 @@ trie_iterator_get_data (const TrieIterator *iter)
 
     return tail_get_data (s->trie->tail, tail_index);
 }
-
+ /**
+ *   * @brief Get data from terminal state
+ *     *
+ *       * @param s    : a terminal state
+ *         *
+ *           * @return the data associated with the terminal state @a s,
+ *             *         or TRIE_DATA_ERROR if @a s is not a terminal state
+ *               *
+ *                 * Not available in 'libdatrie'. Part of the 'datrie' Python package.
+ *                   */
+ TrieData
+ trie_state_get_terminal_data (const TrieState *s)
+ {
+     TrieIndex        tail_index;
+     TrieIndex index = s->index;
+ 
+     if (!s)
+         return TRIE_DATA_ERROR;
+ 
+     if (!s->is_suffix){
+         if (!trie_da_is_separate(s->trie->da, index)) {
+             /* walk to a terminal char to get the data */
+             Bool ret = da_walk (s->trie->da, &index, TRIE_CHAR_TERM);
+             if (!ret) {
+                return TRIE_DATA_ERROR;
+             }
+         }
+         tail_index = trie_da_get_tail_index (s->trie->da, index);
+     }    
+     else {
+         tail_index = s->index;
+     }    
+ 
+     return tail_get_data (s->trie->tail, tail_index);
+ }
 /*
 vi:ts=4:ai:expandtab
 */
+

@@ -48,12 +48,14 @@ typedef uint32         AlphaChar;
  * @brief Raw character type mapped into packed set from AlphaChar,
  * for use in actual trie transition calculations
  */
-typedef unsigned char  TrieChar;
+//typedef unsigned char  TrieChar;
+typedef uint16  TrieChar;
 /**
  * @brief Trie terminator character
  */
 #define TRIE_CHAR_TERM    '\0'
-#define TRIE_CHAR_MAX     255
+//#define TRIE_CHAR_MAX     255
+#define TRIE_CHAR_MAX     65535
 
 /**
  * @brief Type of index into Trie double-array and tail structures

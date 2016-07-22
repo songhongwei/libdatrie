@@ -127,7 +127,7 @@ symbols_add (Symbols *syms, TrieChar c)
     }
     if (lower < syms->num_symbols) {
         memmove (syms->symbols + lower + 1, syms->symbols + lower,
-                 syms->num_symbols - lower);
+                 (syms->num_symbols - lower)* sizeof(TrieChar));
     }
     syms->symbols[lower] = c;
     syms->num_symbols++;
